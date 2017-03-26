@@ -5,22 +5,29 @@
   <artifactId>markdown</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-  </properties>
+
   <name>lib-markdown</name>
   <description>Markdown is the pure Java port of Markdown (a text-to-html conversion tool
     written by John Gruber.)
 
     This library is a fork and rewrite of MarkdownJ, which ceased development around 2014.
 
-    History:
-
-    v1.0.0 fork MarkdownJ v0.5.0 snapshot
-
+    v1.0.0 fork of MarkdownJ v0.5.0 snapshot
   </description>
+
+  <organization>
+    <name>Key Bridge</name>
+    <url>http://keybridge.ch</url>
+  </organization>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <additionalparam>-Xdoclint:none</additionalparam>
+  </properties>
+
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -35,4 +42,12 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+    <repository>
+      <id>${repository.name}</id>
+      <url>${repository.url}</url>
+    </repository>
+  </distributionManagement>
+
 </project>
