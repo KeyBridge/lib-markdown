@@ -54,10 +54,9 @@ public class MarkdownProcessor {
 
   private static final CharacterProtector HTML_PROTECTOR = new CharacterProtector();
   private static final CharacterProtector CHAR_PROTECTOR = new CharacterProtector();
-
+  private final Map<String, LinkDefinition> linkDefinitions;
   private final Random rnd = new Random();
   private final int tabWidth = 4;
-  private Map<String, LinkDefinition> linkDefinitions;
   private int listLevel;
 
   /**
@@ -135,19 +134,17 @@ public class MarkdownProcessor {
             "(?:\\n+|\\Z)",
                                 Pattern.MULTILINE);
 
-    text.replaceAll(p, new Replacement() {
-              public String replacement(Matcher m) {
-                String id = m.group(1).toLowerCase();
-                String url = encodeAmpsAndAngles(new TextEditor(m.group(2))).toString();
-                String title = m.group(3);
+    text.replaceAll(p, (Matcher m) -> {
+              String id = m.group(1).toLowerCase();
+              String url = encodeAmpsAndAngles(new TextEditor(m.group(2))).toString();
+              String title = m.group(3);
 
-                if (title == null) {
-                  title = "";
-                }
-                title = replaceAll(title, "\"", "&quot;");
-                linkDefinitions.put(id, new LinkDefinition(url, title));
-                return "";
+              if (title == null) {
+                title = "";
               }
+              title = replaceAll(title, "\"", "&quot;");
+              linkDefinitions.put(id, new LinkDefinition(url, title));
+              return "";
             });
   }
 
@@ -208,11 +205,9 @@ public class MarkdownProcessor {
             + "[ ]*"
             + "(?=\\n+|\\Z))", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-    Replacement protectHTML = new Replacement() {
-      public String replacement(Matcher m) {
-        String literal = m.group();
-        return "\n\n" + HTML_PROTECTOR.encode(literal) + "\n\n";
-      }
+    Replacement protectHTML = (Matcher m) -> {
+      String literal = m.group();
+      return "\n\n" + HTML_PROTECTOR.encode(literal) + "\n\n";
     };
     text.replaceAll(p1, protectHTML);
 
@@ -288,24 +283,22 @@ public class MarkdownProcessor {
   private TextEditor doAutoLinks(TextEditor markup) {
     markup.replaceAll("<((https?|ftp):[^'\">\\s]+)>", "<a href=\"$1\">$1</a>");
     Pattern email = Pattern.compile("<([-.\\w]+\\@[-a-z0-9]+(\\.[-a-z0-9]+)*\\.[a-z]+)>");
-    markup.replaceAll(email, new Replacement() {
-                public String replacement(Matcher m) {
-                  String address = m.group(1);
-                  TextEditor ed = new TextEditor(address);
-                  unEscapeSpecialChars(ed);
-                  String addr = encodeEmail(ed.toString());
-                  String url = encodeEmail("mailto:" + ed.toString());
-                  return "<a href=\"" + url + "\">" + addr + "</a>";
-                }
+    markup.replaceAll(email, (Matcher m) -> {
+                String address = m.group(1);
+                TextEditor ed = new TextEditor(address);
+                unEscapeSpecialChars(ed);
+                String addr = encodeEmail(ed.toString());
+                String url = encodeEmail("mailto:" + ed.toString());
+                return "<a href=\"" + url + "\">" + addr + "</a>";
               });
     return markup;
   }
 
   private void unEscapeSpecialChars(TextEditor ed) {
-    for (String hash : CHAR_PROTECTOR.getAllEncodedTokens()) {
+    CHAR_PROTECTOR.getAllEncodedTokens().stream().forEach((hash) -> {
       String plaintext = CHAR_PROTECTOR.decode(hash);
       ed.replaceAllLiteral(hash, plaintext);
-    }
+    });
   }
 
   private String encodeEmail(String s) {
@@ -341,23 +334,19 @@ public class MarkdownProcessor {
             + // blanks
             ")+"
             + ")", Pattern.MULTILINE);
-    return markup.replaceAll(p, new Replacement() {
-                       public String replacement(Matcher m) {
-                         TextEditor blockQuote = new TextEditor(m.group(1));
-                         blockQuote.deleteAll("^[ \t]*>[ \t]?");
-                         blockQuote.deleteAll("^[ \t]+$");
-                         blockQuote = runBlockGamut(blockQuote);
-                         blockQuote.replaceAll("^", "  ");
+    return markup.replaceAll(p, (Matcher m) -> {
+                       TextEditor blockQuote = new TextEditor(m.group(1));
+                       blockQuote.deleteAll("^[ \t]*>[ \t]?");
+                       blockQuote.deleteAll("^[ \t]+$");
+                       blockQuote = runBlockGamut(blockQuote);
+                       blockQuote.replaceAll("^", "  ");
 
-                         Pattern p1 = Pattern.compile("(\\s*<pre>.*?</pre>)", Pattern.DOTALL);
-                         blockQuote = blockQuote.replaceAll(p1, new Replacement() {
-                                                      public String replacement(Matcher m1) {
-                                                        String pre = m1.group(1);
-                                                        return deleteAll(pre, "^  ");
-                                                      }
-                                                    });
-                         return "<blockquote>\n" + blockQuote + "\n</blockquote>\n\n";
-                       }
+                       Pattern p1 = Pattern.compile("(\\s*<pre>.*?</pre>)", Pattern.DOTALL);
+                       blockQuote = blockQuote.replaceAll(p1, (Matcher m1) -> {
+                                                    String pre = m1.group(1);
+                                                    return deleteAll(pre, "^  ");
+                                                  });
+                       return "<blockquote>\n" + blockQuote + "\n</blockquote>\n\n";
                      });
   }
 
@@ -373,6 +362,7 @@ public class MarkdownProcessor {
     return markup.replaceAll(p, new Replacement() {
                        private static final String LANG_IDENTIFIER = "lang:";
 
+                       @Override
                        public String replacement(Matcher m) {
                          String codeBlock = m.group(1);
                          TextEditor ed = new TextEditor(codeBlock);
@@ -467,68 +457,64 @@ public class MarkdownProcessor {
             + ")";
 
     if (listLevel > 0) {
-      Replacement replacer = new Replacement() {
-        public String replacement(Matcher m) {
-          String list = m.group(1);
-          String listStart = m.group(3);
-          String listType;
+      Replacement replacer = (Matcher m) -> {
+        String list = m.group(1);
+        String listStart = m.group(3);
+        String listType;
 
-          if (listStart.matches("[*+-]")) {
-            listType = "ul";
-          } else {
-            listType = "ol";
-          }
-
-          // Turn double returns into triple returns, so that we can make a
-          // paragraph for the last item in a list, if necessary:
-          list = replaceAll(list, "\\n{2,}", "\n\n\n");
-
-          String result = processListItems(list);
-
-          // Trim any trailing whitespace, to put the closing `</ol>` or `</ul>`
-          // up on the preceding line, to get it past the current stupid
-          // HTML block parser. This is a hack to work around the terrible
-          // hack that is the HTML block parser.
-          result = result.replaceAll("\\s+$", "");
-
-          String html;
-          if ("ul".equals(listType)) {
-            html = "<ul>" + result + "</ul>\n";
-          } else {
-            html = "<ol>" + result + "</ol>\n";
-          }
-          return html;
+        if (listStart.matches("[*+-]")) {
+          listType = "ul";
+        } else {
+          listType = "ol";
         }
+
+        // Turn double returns into triple returns, so that we can make a
+        // paragraph for the last item in a list, if necessary:
+        list = replaceAll(list, "\\n{2,}", "\n\n\n");
+
+        String result = processListItems(list);
+
+        // Trim any trailing whitespace, to put the closing `</ol>` or `</ul>`
+        // up on the preceding line, to get it past the current stupid
+        // HTML block parser. This is a hack to work around the terrible
+        // hack that is the HTML block parser.
+        result = result.replaceAll("\\s+$", "");
+
+        String html;
+        if ("ul".equals(listType)) {
+          html = "<ul>" + result + "</ul>\n";
+        } else {
+          html = "<ol>" + result + "</ol>\n";
+        }
+        return html;
       };
       Pattern matchStartOfLine = Pattern.compile("^" + wholeList, Pattern.MULTILINE);
       text.replaceAll(matchStartOfLine, replacer);
     } else {
-      Replacement replacer = new Replacement() {
-        public String replacement(Matcher m) {
-          String list = m.group(1);
-          String listStart = m.group(3);
-          String listType;
+      Replacement replacer = (Matcher m) -> {
+        String list = m.group(1);
+        String listStart = m.group(3);
+        String listType;
 
-          if (listStart.matches("[*+-]")) {
-            listType = "ul";
-          } else {
-            listType = "ol";
-          }
-
-          // Turn double returns into triple returns, so that we can make a
-          // paragraph for the last item in a list, if necessary:
-          list = replaceAll(list, "\n{2,}", "\n\n\n");
-
-          String result = processListItems(list);
-
-          String html;
-          if ("ul".equals(listType)) {
-            html = "<ul>\n" + result + "</ul>\n";
-          } else {
-            html = "<ol>\n" + result + "</ol>\n";
-          }
-          return html;
+        if (listStart.matches("[*+-]")) {
+          listType = "ul";
+        } else {
+          listType = "ol";
         }
+
+        // Turn double returns into triple returns, so that we can make a
+        // paragraph for the last item in a list, if necessary:
+        list = replaceAll(list, "\n{2,}", "\n\n\n");
+
+        String result = processListItems(list);
+
+        String html;
+        if ("ul".equals(listType)) {
+          html = "<ul>\n" + result + "</ul>\n";
+        } else {
+          html = "<ol>\n" + result + "</ol>\n";
+        }
+        return html;
       };
       Pattern matchStartOfLine = Pattern.compile("(?:(?<=\\n\\n)|\\A\\n?)" + wholeList, Pattern.MULTILINE);
       text.replaceAll(matchStartOfLine, replacer);
@@ -569,27 +555,25 @@ public class MarkdownProcessor {
             + "((?s:.+?)(\\n{1,2}))"
             + "(?=\\n*(\\z|\\2([-+\\*]|\\d+[.])[ \\t]+))",
                                 Pattern.MULTILINE);
-    list = replaceAll(list, p, new Replacement() {
-                public String replacement(Matcher m) {
-                  String text = m.group(4);
-                  TextEditor item = new TextEditor(text);
-                  String leadingLine = m.group(1);
-                  if (!isEmptyString(leadingLine) || hasParagraphBreak(item)) {
-                    item = runBlockGamut(item.outdent());
-                  } else {
-                    // Recurse sub-lists
-                    item = doLists(item.outdent());
-                    item = runSpanGamut(item);
-                  }
-                  return "<li>" + item.trim().toString() + "</li>\n";
+    list = replaceAll(list, p, (Matcher m) -> {
+                String text = m.group(4);
+                TextEditor item = new TextEditor(text);
+                String leadingLine = m.group(1);
+                if (!isEmptyString(leadingLine) || hasParagraphBreak(item)) {
+                  item = runBlockGamut(item.outdent());
+                } else {
+                  // Recurse sub-lists
+                  item = doLists(item.outdent());
+                  item = runSpanGamut(item);
                 }
+                return "<li>" + item.trim().toString() + "</li>\n";
               });
     listLevel--;
     return list;
   }
 
   private boolean hasParagraphBreak(TextEditor item) {
-    return item.toString().indexOf("\n\n") != -1;
+    return item.toString().contains("\n\n");
   }
 
   private boolean isEmptyString(String leadingLine) {
@@ -603,14 +587,12 @@ public class MarkdownProcessor {
 
     // atx-style headers - e.g., "#### heading 4 ####"
     Pattern p = Pattern.compile("^(#{1,6})\\s*(.*?)\\s*\\1?$", Pattern.MULTILINE);
-    markup.replaceAll(p, new Replacement() {
-                public String replacement(Matcher m) {
-                  String marker = m.group(1);
-                  String heading = m.group(2);
-                  int level = marker.length();
-                  String tag = "h" + level;
-                  return "<" + tag + ">" + heading + "</" + tag + ">\n";
-                }
+    markup.replaceAll(p, (Matcher m) -> {
+                String marker = m.group(1);
+                String heading = m.group(2);
+                int level = marker.length();
+                String tag = "h" + level;
+                return "<" + tag + ">" + heading + "</" + tag + ">\n";
               });
     return markup;
   }
@@ -666,7 +648,7 @@ public class MarkdownProcessor {
     Collection<HTMLToken> tokens = text.tokenizeHTML();
     TextEditor newText = new TextEditor("");
 
-    for (HTMLToken token : tokens) {
+    tokens.stream().map((token) -> {
       String value = token.getText();
       if (token.isTag()) {
         value = value.replaceAll("\\\\", CHAR_PROTECTOR.encode("\\"));
@@ -674,8 +656,10 @@ public class MarkdownProcessor {
         value = value.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
         value = value.replaceAll("_", CHAR_PROTECTOR.encode("_"));
       }
+      return value;
+    }).forEach((value) -> {
       newText.append(value);
-    }
+    });
 
     return newText;
   }
@@ -693,35 +677,33 @@ public class MarkdownProcessor {
             + "\\[(.*?)\\]"
             + // ID = $3
             ")");
-    text.replaceAll(imageLink, new Replacement() {
-              public String replacement(Matcher m) {
-                String replacementText;
-                String wholeMatch = m.group(1);
-                String altText = m.group(2);
-                String id = m.group(3).toLowerCase();
-                if ("".equals(id)) {
-                  id = altText.toLowerCase();
-                }
-
-                // imageDefinition is the same as linkDefinition
-                LinkDefinition defn = linkDefinitions.get(id);
-                if (defn != null) {
-                  String url = defn.getUrl();
-                  url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                  url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                  String title = defn.getTitle();
-                  String titleTag = "";
-                  if (title != null && !title.equals("")) {
-                    title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                    title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                    titleTag = " alt=\"" + altText + "\" title=\"" + title + "\"";
-                  }
-                  replacementText = "<img src=\"" + url + "\"" + titleTag + "/>";
-                } else {
-                  replacementText = wholeMatch;
-                }
-                return replacementText;
+    text.replaceAll(imageLink, (Matcher m) -> {
+              String replacementText;
+              String wholeMatch = m.group(1);
+              String altText = m.group(2);
+              String id = m.group(3).toLowerCase();
+              if ("".equals(id)) {
+                id = altText.toLowerCase();
               }
+
+              // imageDefinition is the same as linkDefinition
+              LinkDefinition defn = linkDefinitions.get(id);
+              if (defn != null) {
+                String url = defn.getUrl();
+                url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                String title = defn.getTitle();
+                String titleTag = "";
+                if (title != null && !title.equals("")) {
+                  title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                  title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                  titleTag = " alt=\"" + altText + "\" title=\"" + title + "\"";
+                }
+                replacementText = "<img src=\"" + url + "\"" + titleTag + "/>";
+              } else {
+                replacementText = wholeMatch;
+              }
+              return replacementText;
             });
   }
 
@@ -734,36 +716,34 @@ public class MarkdownProcessor {
             + "\\[(.*?)\\]"
             + // ID = $3
             ")");
-    markup.replaceAll(internalLink, new Replacement() {
-                public String replacement(Matcher m) {
-                  String replacementText;
-                  String wholeMatch = m.group(1);
-                  String linkText = m.group(2);
-                  String id = m.group(3).toLowerCase();
-                  if ("".equals(id)) { // for shortcut links like [this][]
-                    id = linkText.toLowerCase();
-                  }
-
-                  LinkDefinition defn = linkDefinitions.get(id);
-                  if (defn != null) {
-                    String url = defn.getUrl();
-                    // protect emphasis (* and _) within urls
-                    url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                    url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                    String title = defn.getTitle();
-                    String titleTag = "";
-                    if (title != null && !title.equals("")) {
-                      // protect emphasis (* and _) within urls
-                      title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                      title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                      titleTag = " title=\"" + title + "\"";
-                    }
-                    replacementText = "<a href=\"" + url + "\"" + titleTag + ">" + linkText + "</a>";
-                  } else {
-                    replacementText = wholeMatch;
-                  }
-                  return replacementText;
+    markup.replaceAll(internalLink, (Matcher m) -> {
+                String replacementText;
+                String wholeMatch = m.group(1);
+                String linkText = m.group(2);
+                String id = m.group(3).toLowerCase();
+                if ("".equals(id)) { // for shortcut links like [this][]
+                  id = linkText.toLowerCase();
                 }
+
+                LinkDefinition defn = linkDefinitions.get(id);
+                if (defn != null) {
+                  String url = defn.getUrl();
+                  // protect emphasis (* and _) within urls
+                  url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                  url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                  String title = defn.getTitle();
+                  String titleTag = "";
+                  if (title != null && !title.equals("")) {
+                    // protect emphasis (* and _) within urls
+                    title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                    title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                    titleTag = " title=\"" + title + "\"";
+                  }
+                  replacementText = "<a href=\"" + url + "\"" + titleTag + ">" + linkText + "</a>";
+                } else {
+                  replacementText = wholeMatch;
+                }
+                return replacementText;
               });
 
     // Inline-style links: [link text](url "optional title")
@@ -785,29 +765,27 @@ public class MarkdownProcessor {
             + ")?"
             + "\\)"
             + ")", Pattern.DOTALL);
-    markup.replaceAll(inlineLink, new Replacement() {
-                public String replacement(Matcher m) {
-                  String linkText = m.group(2);
-                  String url = m.group(3);
-                  String title = m.group(6);
+    markup.replaceAll(inlineLink, (Matcher m) -> {
+                String linkText = m.group(2);
+                String url = m.group(3);
+                String title = m.group(6);
+                // protect emphasis (* and _) within urls
+                url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                StringBuilder result = new StringBuilder();
+                result.append("<a href=\"").append(url).append("\"");
+                if (title != null) {
                   // protect emphasis (* and _) within urls
-                  url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                  url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                  StringBuilder result = new StringBuilder();
-                  result.append("<a href=\"").append(url).append("\"");
-                  if (title != null) {
-                    // protect emphasis (* and _) within urls
-                    title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                    title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                    title = replaceAll(title, "\"", "&quot;");
-                    result.append(" title=\"");
-                    result.append(title);
-                    result.append("\"");
-                  }
-                  result.append(">").append(linkText);
-                  result.append("</a>");
-                  return result.toString();
+                  title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                  title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                  title = replaceAll(title, "\"", "&quot;");
+                  result.append(" title=\"");
+                  result.append(title);
+                  result.append("\"");
                 }
+                result.append(">").append(linkText);
+                result.append("</a>");
+                return result.toString();
               });
 
     // Last, handle reference-style shortcuts: [link text]
@@ -820,34 +798,32 @@ public class MarkdownProcessor {
             + // link text = $2; can't contain '[' or ']'
             "\\]"
             + ")", Pattern.DOTALL);
-    markup.replaceAll(referenceShortcut, new Replacement() {
-                public String replacement(Matcher m) {
-                  String replacementText;
-                  String wholeMatch = m.group(1);
-                  String linkText = m.group(2);
-                  String id = m.group(2).toLowerCase(); // link id should be lowercase
-                  id = id.replaceAll("[ ]?\\n", " "); // change embedded newlines into spaces
+    markup.replaceAll(referenceShortcut, (Matcher m) -> {
+                String replacementText;
+                String wholeMatch = m.group(1);
+                String linkText = m.group(2);
+                String id = m.group(2).toLowerCase(); // link id should be lowercase
+                id = id.replaceAll("[ ]?\\n", " "); // change embedded newlines into spaces
 
-                  LinkDefinition defn = linkDefinitions.get(id.toLowerCase());
-                  if (defn != null) {
-                    String url = defn.getUrl();
+                LinkDefinition defn = linkDefinitions.get(id.toLowerCase());
+                if (defn != null) {
+                  String url = defn.getUrl();
+                  // protect emphasis (* and _) within urls
+                  url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                  url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                  String title = defn.getTitle();
+                  String titleTag = "";
+                  if (title != null && !title.equals("")) {
                     // protect emphasis (* and _) within urls
-                    url = url.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                    url = url.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                    String title = defn.getTitle();
-                    String titleTag = "";
-                    if (title != null && !title.equals("")) {
-                      // protect emphasis (* and _) within urls
-                      title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
-                      title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
-                      titleTag = " title=\"" + title + "\"";
-                    }
-                    replacementText = "<a href=\"" + url + "\"" + titleTag + ">" + linkText + "</a>";
-                  } else {
-                    replacementText = wholeMatch;
+                    title = title.replaceAll("\\*", CHAR_PROTECTOR.encode("*"));
+                    title = title.replaceAll("_", CHAR_PROTECTOR.encode("_"));
+                    titleTag = " title=\"" + title + "\"";
                   }
-                  return replacementText;
+                  replacementText = "<a href=\"" + url + "\"" + titleTag + ">" + linkText + "</a>";
+                } else {
+                  replacementText = wholeMatch;
                 }
+                return replacementText;
               });
 
     return markup;
@@ -868,14 +844,12 @@ public class MarkdownProcessor {
   }
 
   private TextEditor doCodeSpans(TextEditor markup) {
-    return markup.replaceAll(Pattern.compile("(?<!\\\\)(`+)(.+?)(?<!`)\\1(?!`)"), new Replacement() {
-                       public String replacement(Matcher m) {
-                         String code = m.group(2);
-                         TextEditor subEditor = new TextEditor(code);
-                         subEditor.deleteAll("^[ \\t]+").deleteAll("[ \\t]+$");
-                         encodeCode(subEditor);
-                         return "<code>" + subEditor.toString() + "</code>";
-                       }
+    return markup.replaceAll(Pattern.compile("(?<!\\\\)(`+)(.+?)(?<!`)\\1(?!`)"), (Matcher m) -> {
+                       String code = m.group(2);
+                       TextEditor subEditor = new TextEditor(code);
+                       subEditor.deleteAll("^[ \\t]+").deleteAll("[ \\t]+$");
+                       encodeCode(subEditor);
+                       return "<code>" + subEditor.toString() + "</code>";
                      });
   }
 
@@ -897,23 +871,7 @@ public class MarkdownProcessor {
 
   @Override
   public String toString() {
-    return "Markdown Processor for Java 0.4.0 (compatible with Markdown 1.0.2b2)";
+    return "Markdown Processor for Java (compatible with Markdown 1.0.2b2)";
   }
 
-  public static void main(String[] args) {
-    StringBuilder buf = new StringBuilder();
-    char[] cbuf = new char[1024];
-    java.io.Reader in = new java.io.InputStreamReader(System.in);
-    try {
-      int charsRead = in.read(cbuf);
-      while (charsRead >= 0) {
-        buf.append(cbuf, 0, charsRead);
-        charsRead = in.read(cbuf);
-      }
-      System.out.println(new MarkdownProcessor().markdown(buf.toString()));
-    } catch (java.io.IOException e) {
-      System.err.println("Error reading input: " + e.getMessage());
-      System.exit(1);
-    }
-  }
 }

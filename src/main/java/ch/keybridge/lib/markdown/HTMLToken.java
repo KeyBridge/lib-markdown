@@ -1,41 +1,43 @@
 package ch.keybridge.lib.markdown;
 
 public class HTMLToken {
-    private boolean isTag;
-    private String text;
 
-    private HTMLToken(boolean tag, String value) {
-        isTag = tag;
-        text = value;
-    }
+  private final boolean isTag;
+  private final String text;
 
-    public static HTMLToken tag(String text) {
-        return new HTMLToken(true, text);
-    }
+  private HTMLToken(boolean tag, String value) {
+    isTag = tag;
+    text = value;
+  }
 
-    public static HTMLToken text(String text) {
-        return new HTMLToken(false, text);
-    }
+  public static HTMLToken tag(String text) {
+    return new HTMLToken(true, text);
+  }
 
-    /**
-     * @return <code>true</code> if this is a tag, <code>false</code> if it's text.
-     */
-    public boolean isTag() {
-        return isTag;
-    }
+  public static HTMLToken text(String text) {
+    return new HTMLToken(false, text);
+  }
 
-    public String getText() {
-        return text;
-    }
+  /**
+   * @return <code>true</code> if this is a tag, <code>false</code> if it's
+   *         text.
+   */
+  public boolean isTag() {
+    return isTag;
+  }
 
-    @Override
-    public String toString() {
-        String type;
-        if (isTag()) {
-            type = "tag";
-        } else {
-            type = "text";
-        }
-        return type + ": " + getText();
+  public String getText() {
+    return text;
+  }
+
+  @Override
+  public String toString() {
+    String type;
+    if (isTag()) {
+      type = "tag";
+    } else {
+      type = "text";
     }
+    return type + ": " + getText();
+  }
 }

@@ -12,8 +12,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class PreserveHtmlBlockTagsTest {
 
-  private MarkdownProcessor m;
-  private String value;
+  private final MarkdownProcessor m;
+  private final String value;
 
   @Parameters
   public static Collection<Object[]> testHtml() {

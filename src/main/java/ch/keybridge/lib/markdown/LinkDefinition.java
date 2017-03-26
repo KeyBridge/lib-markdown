@@ -31,29 +31,29 @@ liability, whether in contract, strict liability, or tort (including
 negligence or otherwise) arising in any way out of the use of this
 software, even if advised of the possibility of such damage.
 
-*/
-
+ */
 package ch.keybridge.lib.markdown;
 
 public class LinkDefinition {
-    private String url;
-    private String title;
 
-    public LinkDefinition(String url, String title) {
-        this.url = url;
-        this.title = title;
-    }
+  private final String url;
+  private final String title;
 
-    public String getUrl() {
-        return url;
-    }
+  public LinkDefinition(String url, String title) {
+    this.url = url;
+    this.title = title;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    @Override
-    public String toString() {
-        return url + " (" + title + ")";
-    }
+  public String getTitle() {
+    return title;
+  }
+
+  @Override
+  public String toString() {
+    return url + " (" + title + ")";
+  }
 }

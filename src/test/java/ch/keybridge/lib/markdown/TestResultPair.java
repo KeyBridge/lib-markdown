@@ -36,9 +36,9 @@ software, even if advised of the possibility of such damage.
 package ch.keybridge.lib.markdown;
 
 public class TestResultPair {
-    private String name;
-    private String test;
-    private String result;
+    private final String name;
+    private final String test;
+    private final String result;
 
     public TestResultPair(String name, String test, String result) {
         this.name = name;
