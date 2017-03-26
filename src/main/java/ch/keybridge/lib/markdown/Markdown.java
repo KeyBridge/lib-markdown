@@ -1,37 +1,18 @@
 /*
-Copyright (c) 2005, Martian Software
-Authors: Pete Bevin, John Mutchek
-http://www.martiansoftware.com/markdownj
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-* Neither the name "Markdown" nor the names of its contributors may
-  be used to endorse or promote products derived from this software
-  without specific prior written permission.
-
-This software is provided by the copyright holders and contributors "as
-is" and any express or implied warranties, including, but not limited
-to, the implied warranties of merchantability and fitness for a
-particular purpose are disclaimed. In no event shall the copyright owner
-or contributors be liable for any direct, indirect, incidental, special,
-exemplary, or consequential damages (including, but not limited to,
-procurement of substitute goods or services; loss of use, data, or
-profits; or business interruption) however caused and on any theory of
-liability, whether in contract, strict liability, or tort (including
-negligence or otherwise) arising in any way out of the use of this
-software, even if advised of the possibility of such damage.
-
+ * Copyright (C) Various authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package ch.keybridge.lib.markdown;
 
@@ -43,14 +24,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Convert Markdown text into HTML, as per
- * http://daringfireball.net/projects/markdown/ . Usage:
+ * Java Implementation of Markdown parser.
+ * <p>
+ * Converts Markdown text into HTML, as per
+ * http://daringfireball.net/projects/toHtml/ . Usage:
  * <pre><code>
- *     MarkdownProcessor markdown = new MarkdownProcessor();
- *     String html = markdown.markdown("*italic*   **bold**\n_italic_   __bold__");
+ * Markdown markdown = new Markdown();
+ * String html = markdown.toHtml("*italic*   **bold**\n_italic_   __bold__\nThis is *Sparta*");
  * </code></pre>
+ * <p>
+ * This is a simple implementation for basic encoded Markdown. For a very
+ * sophisticated and actively developed MD processor check out flexmark-java.
+ * <p>
+ * @author Original copyright (c) 2005 Pete Bevin, John Mutchek, Martian
+ * Software
+ * @author Key Bridge
  */
-public class MarkdownProcessor {
+public class Markdown {
 
   private static final CharacterProtector HTML_PROTECTOR = new CharacterProtector();
   private static final CharacterProtector CHAR_PROTECTOR = new CharacterProtector();
@@ -62,7 +52,7 @@ public class MarkdownProcessor {
   /**
    * Creates a new Markdown processor.
    */
-  public MarkdownProcessor() {
+  public Markdown() {
     this.linkDefinitions = new TreeMap<>();
     listLevel = 0;
   }
@@ -70,14 +60,14 @@ public class MarkdownProcessor {
   /**
    * Perform the conversion from Markdown to HTML.
    *
-   * @param txt - input in markdown format
-   * @return HTML block corresponding to txt passed in.
+   * @param markdown - markdown input text to convert
+   * @return HTML block corresponding to the input text
    */
-  public String markdown(String txt) {
-    if (txt == null) {
-      txt = "";
+  public String toHtml(String markdown) {
+    if (markdown == null) {
+      markdown = "";
     }
-    TextEditor text = new TextEditor(txt);
+    TextEditor text = new TextEditor(markdown);
 
     // Standardize line endings:
     text.replaceAll("\\r\\n", "\n"); 	// DOS to Unix
@@ -98,6 +88,7 @@ public class MarkdownProcessor {
     return text.toString();
   }
 
+  //<editor-fold defaultstate="collapsed" desc="MD Text Processing Methods">
   private TextEditor encodeBackslashEscapes(TextEditor text) {
     char[] normalChars = "`_>!".toCharArray();
     char[] escapedChars = "*{}[]()#+-.".toCharArray();
@@ -148,7 +139,7 @@ public class MarkdownProcessor {
             });
   }
 
-  public TextEditor runBlockGamut(TextEditor text) {
+  private TextEditor runBlockGamut(TextEditor text) {
     doHeaders(text);
     doHorizontalRules(text);
     doLists(text);
@@ -400,7 +391,7 @@ public class MarkdownProcessor {
                        }
 
                        public String languageBlock(String firstLine, String text) {
-                         // dont'use %n in format string (markdown aspect every new line char as "\n")
+                         // dont'use %n in format string (toHtml aspect every new line char as "\n")
                          //String codeBlockTemplate = "<pre class=\"brush: %s\">%n%s%n</pre>"; // http://alexgorbatchev.com/wiki/SyntaxHighlighter
                          String codeBlockTemplate = "\n\n<pre class=\"%s\">\n%s\n</pre>\n\n"; // http://shjs.sourceforge.net/doc/documentation.html
                          String lang = firstLine.replaceFirst(LANG_IDENTIFIER, "").trim();
@@ -409,7 +400,7 @@ public class MarkdownProcessor {
                        }
 
                        public String genericCodeBlock(String text) {
-                         // dont'use %n in format string (markdown aspect every new line char as "\n")
+                         // dont'use %n in format string (toHtml aspect every new line char as "\n")
                          String codeBlockTemplate = "\n\n<pre><code>%s\n</code></pre>\n\n";
                          return String.format(codeBlockTemplate, text);
                        }
@@ -609,7 +600,7 @@ public class MarkdownProcessor {
     return buf.toString();
   }
 
-  public TextEditor runSpanGamut(TextEditor text) {
+  private TextEditor runSpanGamut(TextEditor text) {
     text = escapeSpecialCharsWithinTagAttributes(text);
     text = doCodeSpans(text);
     text = encodeBackslashEscapes(text);
@@ -867,7 +858,7 @@ public class MarkdownProcessor {
     TextEditor ed = new TextEditor(markup);
     ed.replaceAll(pattern, replacement);
     return ed.toString();
-  }
+  }//</editor-fold>
 
   @Override
   public String toString() {

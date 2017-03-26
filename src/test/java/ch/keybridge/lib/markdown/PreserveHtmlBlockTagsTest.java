@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class PreserveHtmlBlockTagsTest {
 
-  private final MarkdownProcessor m;
+  private final Markdown m;
   private final String value;
 
   @Parameters
@@ -32,13 +32,13 @@ public class PreserveHtmlBlockTagsTest {
   }
 
   public PreserveHtmlBlockTagsTest(String value) {
-    this.m = new MarkdownProcessor();
+    this.m = new Markdown();
     this.value = value;
   }
 
   @Test
   public void testRoundtripPreservesTags() {
-    assertEquals(value, m.markdown(value).trim());
+    assertEquals(value, m.toHtml(value).trim());
   }
 
 }
