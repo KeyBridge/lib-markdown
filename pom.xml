@@ -7,11 +7,13 @@
   <packaging>jar</packaging>
 
   <name>lib-markdown</name>
-  <description>Markdown is the pure Java port of Markdown (a text-to-html conversion tool
-    written by John Gruber.)
+  <description>Markdown to HTML translation.
 
-    This library is a fork and rewrite of MarkdownJ, which ceased development around 2014.
+    Markdown is the pure Java port of Markdown (a text-to-html conversion tool
+    written by John Gruber.) This library is a fork and rewrite of MarkdownJ, which
+    ceased development around 2014.
 
+    History
     v1.0.0 fork of MarkdownJ v0.5.0 snapshot
   </description>
 
