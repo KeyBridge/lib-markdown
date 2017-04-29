@@ -9,6 +9,9 @@ developed MD processor check out flexmark-java.
 
 ```java
  Markdown markdown = new Markdown();
- String html = markdown.toHtml("This is *Sparta*");
+ String html = markdown.toHtml("This is *Html*");
 ```
 
+## License
+
+The project is licensed under a Revised BSD License. Refer to the accompanying LICENSE file.
