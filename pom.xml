@@ -13,6 +13,11 @@
     written by John Gruber.) This library is a fork and rewrite of MarkdownJ, which
     ceased development around 2014.
 
+    Original project MarkdownJ is:
+    Copyright (c) 2005 Pete Bevin
+    Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
+    Copyright (c) 2008 - 2013 Alex Coles
+
     History
     v1.0.0 fork of MarkdownJ v0.5.0 snapshot
   </description>
