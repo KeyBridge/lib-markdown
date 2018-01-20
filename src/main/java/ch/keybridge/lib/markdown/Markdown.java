@@ -39,6 +39,11 @@ import java.util.regex.Pattern;
  * @author Original copyright (c) 2005 Pete Bevin, John Mutchek, Martian
  * Software
  * @author Key Bridge 2017
+ * @see <a href="http://www.regular-expressions.info/lookaround.html>Lookahead
+ * and Lookbehind</a>
+ * @see
+ * <a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html>Java
+ * Pattern</a>
  * @since 10/20/18 - add support for github code blocks
  */
 public class Markdown {
