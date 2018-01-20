@@ -4,8 +4,8 @@
 
 Markdown is a pure Java port of Markdown (a text-to-html conversion tool written by John Gruber.) This library is a fork, upgrade and and rewrite of **MarkdownJ** which ceased development around 2005. 
     
-This library supports basic encoded Markdown text. For a very sophisticated and actively
-developed MD processor check out flexmark-java.
+This library supports basic encoded Markdown text. We use it to render simple encoded
+text blocks in various languages.
 
 *Usage*
 
@@ -18,11 +18,10 @@ developed MD processor check out flexmark-java.
 
 Licensed under a Revised BSD License. Refer to the accompanying LICENSE file.
 
-The original MarkdownJ project is:
-
- - Copyright (c) 2005 Pete Bevin
+ - Copyright (c) 2005 Pete Bevin 
  - Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
  - Copyright (c) 2008 - 2013 Alex Coles
+ - Copyright (c) 2017+ Key Bridge 
 
 ### History
 
@@ -31,7 +30,10 @@ The original MarkdownJ project is:
 
 ### References
 
+For a more sophisticated and actively developed MD processor check out flexmark-java.
+
  - [Markdown](https://daringfireball.net/projects/markdown)
  - [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+ - [flexmark-java](https://github.com/vsch/flexmark-java)
  
  
