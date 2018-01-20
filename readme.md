@@ -20,14 +20,14 @@ Licensed under a Revised BSD License. Refer to the accompanying LICENSE file.
 
 The original MarkdownJ project is:
 
-> Copyright (c) 2005 Pete Bevin
-> Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
-> Copyright (c) 2008 - 2013 Alex Coles
+ - Copyright (c) 2005 Pete Bevin
+ - Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
+ - Copyright (c) 2008 - 2013 Alex Coles
 
 ### History
 
-> v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
-> v1.1.0 - add support for github encoded code blocks using three back ticks (```)
+ - v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
+ - v1.1.0 - add support for github encoded code blocks using three back ticks (```)
 
 ### References
 
