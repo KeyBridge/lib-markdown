@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
  * @author Original copyright (c) 2005 Pete Bevin, John Mutchek, Martian
  * Software
  * @author Key Bridge 2017
+ * @since 10/20/18 - add support for github code blocks
  */
 public class Markdown {
 
@@ -113,15 +114,15 @@ public class Markdown {
 
   private void stripLinkDefinitions(TextEditor text) {
     Pattern p = Pattern.compile("^[ ]{0,3}\\[(.+)\\]:"
-                                + // ID = $1
+      + // ID = $1
       "[ \\t]*\\n?[ \\t]*"
-                                + // Space
+      + // Space
       "<?(\\S+?)>?"
-                                + // URL = $2
+      + // URL = $2
       "[ \\t]*\\n?[ \\t]*"
-                                + // Space
+      + // Space
       "(?:[\"(](.+?)[\")][ \\t]*)?"
-                                + // Optional title = $3
+      + // Optional title = $3
       "(?:\\n+|\\Z)",
                                 Pattern.MULTILINE);
 
@@ -144,6 +145,7 @@ public class Markdown {
     doHorizontalRules(text);
     doLists(text);
     doCodeBlocks(text);
+    doGHCodeBlocks(text); // github code blocks
     doBlockQuotes(text);
 
     hashHTMLBlocks(text);
@@ -189,12 +191,12 @@ public class Markdown {
     // We need to do this before the next, more liberal match, because the next
     // match will start at the first `<div>` and stop at the first `</div>`.
     Pattern p1 = Pattern.compile("("
-                                 + "^<(" + alternationA + ")"
-                                 + "\\b"
-                                 + "(.*\\n)*?"
-                                 + "</\\2>"
-                                 + "[ ]*"
-                                 + "(?=\\n+|\\Z))", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+      + "^<(" + alternationA + ")"
+      + "\\b"
+      + "(.*\\n)*?"
+      + "</\\2>"
+      + "[ ]*"
+      + "(?=\\n+|\\Z))", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     Replacement protectHTML = (Matcher m) -> {
       String literal = m.group();
@@ -204,47 +206,47 @@ public class Markdown {
 
     // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
     Pattern p2 = Pattern.compile("("
-                                 + "^"
-                                 + "<(" + alternationB + ")"
-                                 + "\\b"
-                                 + "(.*\\n)*?"
-                                 + ".*</\\2>"
-                                 + "[ ]*"
-                                 + "(?=\\n+|\\Z))", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+      + "^"
+      + "<(" + alternationB + ")"
+      + "\\b"
+      + "(.*\\n)*?"
+      + ".*</\\2>"
+      + "[ ]*"
+      + "(?=\\n+|\\Z))", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
     text.replaceAll(p2, protectHTML);
 
     // Special case for <hr>
     Pattern p3 = Pattern.compile("(?:"
-                                 + "(?<=\\n\\n)"
-                                 + "|"
-                                 + "\\A\\n?"
-                                 + ")"
-                                 + "("
-                                 + "[ ]{0," + less_than_tab + "}"
-                                 + "<(hr)"
-                                 + "\\b"
-                                 + "([^<>])*?"
-                                 + "/?>"
-                                 + "[ ]*"
-                                 + "(?=\\n{2,}|\\Z))", Pattern.CASE_INSENSITIVE);
+      + "(?<=\\n\\n)"
+      + "|"
+      + "\\A\\n?"
+      + ")"
+      + "("
+      + "[ ]{0," + less_than_tab + "}"
+      + "<(hr)"
+      + "\\b"
+      + "([^<>])*?"
+      + "/?>"
+      + "[ ]*"
+      + "(?=\\n{2,}|\\Z))", Pattern.CASE_INSENSITIVE);
     text.replaceAll(p3, protectHTML);
 
     // Special case for standalone HTML comments:
     Pattern p4 = Pattern.compile("(?:"
-                                 + "(?<=\\n\\n)"
-                                 + "|"
-                                 + "\\A\\n?"
-                                 + ")"
-                                 + "("
-                                 + "[ ]{0," + less_than_tab + "}"
-                                 + "(?s:"
-                                 + "<!"
-                                 + "(--.*?--\\s*)+"
-                                 + ">"
-                                 + ")"
-                                 + "[ ]*"
-                                 + "(?=\\n{2,}|\\Z)"
-                                 + ")");
+      + "(?<=\\n\\n)"
+      + "|"
+      + "\\A\\n?"
+      + ")"
+      + "("
+      + "[ ]{0," + less_than_tab + "}"
+      + "(?s:"
+      + "<!"
+      + "(--.*?--\\s*)+"
+      + ">"
+      + ")"
+      + "[ ]*"
+      + "(?=\\n{2,}|\\Z)"
+      + ")");
     text.replaceAll(p4, protectHTML);
   }
 
@@ -314,17 +316,13 @@ public class Markdown {
 
   private TextEditor doBlockQuotes(TextEditor markup) {
     Pattern p = Pattern.compile("("
-                                + "("
-                                + "^[ \t]*>[ \t]?"
-                                + // > at the start of a line
-      ".+\\n"
-                                + // rest of the first line
-      "(.+\\n)*"
-                                + // subsequent consecutive lines
-      "\\n*"
-                                + // blanks
-      ")+"
-                                + ")", Pattern.MULTILINE);
+      + "("
+      + "^[ \t]*>[ \t]?" // > at the start of a line
+      + ".+\\n" // rest of the first line
+      + "(.+\\n)*" // subsequent consecutive lines
+      + "\\n*" // blanks
+      + ")+"
+      + ")", Pattern.MULTILINE);
     return markup.replaceAll(p, (Matcher m) -> {
                              TextEditor blockQuote = new TextEditor(m.group(1));
                              blockQuote.deleteAll("^[ \t]*>[ \t]?");
@@ -341,15 +339,66 @@ public class Markdown {
                            });
   }
 
+  /**
+   * Parse github style code blocks. GH code blocks are wrapped in three back
+   * ticks (```). The first line can indicate the language type. e.g. "``` java"
+   *
+   * @since 10/20/18 - add support for github code blocks
+   * @param markup the markup text
+   * @return a text editor instance
+   */
+  private TextEditor doGHCodeBlocks(TextEditor markup) {
+    String pattern = "(?:```)\\s?+(\\w*)\\n((.*\\n)+)(?:```)";
+    Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
+    return markup.replaceAll(p, new Replacement() {
+                             @Override
+                             public String replacement(Matcher m) {
+                               String codeBlock = m.group(2);
+                               System.out.println("debug found codeblock ");
+                               TextEditor ed = new TextEditor(codeBlock);
+                               ed.outdent();
+                               encodeCode(ed);
+                               ed.detabify().deleteAll("\\A\\n+").deleteAll("\\s+\\z");
+                               String text = ed.toString();
+                               String out;
+                               if (isLanguageIdentifier(m.group(1))) {
+                                 out = languageBlock(m.group(1), text);
+                               } else {
+                                 out = genericCodeBlock(text);
+                               }
+                               return out;
+                             }
+
+                             public boolean isLanguageIdentifier(String line) {
+                               return line != null && !line.trim().isEmpty();
+                             }
+
+                             public String languageBlock(String firstLine, String text) {
+                               // dont'use %n in format string (toHtml aspect every new line char as "\n")
+                               //String codeBlockTemplate = "<pre class=\"brush: %s\">%n%s%n</pre>"; // http://alexgorbatchev.com/wiki/SyntaxHighlighter
+                               String codeBlockTemplate = "\n\n<pre class=\"%s\">\n%s\n</pre>\n\n"; // http://shjs.sourceforge.net/doc/documentation.html
+                               String lang = firstLine.trim();
+                               String block = text.replaceFirst(firstLine + "\n", "");
+                               return String.format(codeBlockTemplate, lang, block);
+                             }
+
+                             public String genericCodeBlock(String text) {
+                               // dont'use %n in format string (toHtml aspect every new line char as "\n")
+                               String codeBlockTemplate = "\n\n<pre><code>%s\n</code></pre>\n\n";
+                               return String.format(codeBlockTemplate, text);
+                             }
+                           });
+  }
+
   private TextEditor doCodeBlocks(TextEditor markup) {
     Pattern p = Pattern.compile(""
-                                + "(?:\\n\\n|\\A)"
-                                + "((?:"
-                                + "(?:[ ]{4})"
-                                + ".*\\n+"
-                                + ")+"
-                                + ")"
-                                + "((?=^[ ]{0,4}\\S)|\\Z)", Pattern.MULTILINE);
+      + "(?:\\n\\n|\\A)"
+      + "((?:"
+      + "(?:[ ]{4})"
+      + ".*\\n+"
+      + ")+"
+      + ")"
+      + "((?=^[ ]{0,4}\\S)|\\Z)", Pattern.MULTILINE);
     return markup.replaceAll(p, new Replacement() {
                              private static final String LANG_IDENTIFIER = "lang:";
 
@@ -420,32 +469,34 @@ public class Markdown {
     ed.replaceAll("\\\\", CHAR_PROTECTOR.encode("\\"));
   }
 
+  /**
+   * Encode lists. Unordered lists use asterisks, pluses, and hyphens —
+   * interchangably — as list markers:
+   *
+   * @param text the text
+   * @return the modified text
+   */
   private TextEditor doLists(TextEditor text) {
     int lessThanTab = tabWidth - 1;
 
-    String wholeList
-      = "("
-        + "("
-        + "[ ]{0," + lessThanTab + "}"
-        + "((?:[-+*]|\\d+[.]))"
-        + // $3 is first list item marker
-      "[ ]+"
-        + ")"
-        + "(?s:.+?)"
-        + "("
-        + "\\z"
-        + // End of input is OK
-      "|"
-        + "\\n{2,}"
-        + "(?=\\S)"
-        + // If not end of input, then a new para
-      "(?![ ]*"
-        + "(?:[-+*]|\\d+[.])"
-        + "[ ]+"
-        + ")"
-        + // negative lookahead for another list marker
-      ")"
-        + ")";
+    String wholeList = "("
+      + "("
+      + "[ ]{0," + lessThanTab + "}"
+      + "((?:[-+*]|\\d+[.]))"// $3 is first list item marker
+      + "[ ]+"
+      + ")"
+      + "(?s:.+?)"
+      + "("
+      + "\\z"// End of input is OK
+      + "|"
+      + "\\n{2,}"
+      + "(?=\\S)"// If not end of input, then a new para
+      + "(?![ ]*"
+      + "(?:[-+*]|\\d+[.])"
+      + "[ ]+"
+      + ")"// negative lookahead for another list marker
+      + ")"
+      + ")";
 
     if (listLevel > 0) {
       Replacement replacer = (Matcher m) -> {
@@ -542,9 +593,9 @@ public class Markdown {
     list = replaceAll(list, "\\n{2,}\\z", "\n");
 
     Pattern p = Pattern.compile("(\\n)?"
-                                + "^([ \\t]*)([-+*]|\\d+[.])[ ]+"
-                                + "((?s:.+?)(\\n{1,2}))"
-                                + "(?=\\n*(\\z|\\2([-+\\*]|\\d+[.])[ \\t]+))",
+      + "^([ \\t]*)([-+*]|\\d+[.])[ ]+"
+      + "((?s:.+?)(\\n{1,2}))"
+      + "(?=\\n*(\\z|\\2([-+\\*]|\\d+[.])[ \\t]+))",
                                 Pattern.MULTILINE);
     list = replaceAll(list, p, (Matcher m) -> {
                       String text = m.group(4);
@@ -662,11 +713,11 @@ public class Markdown {
 
     // Reference-style image syntax
     Pattern imageLink = Pattern.compile("("
-                                        + "[!]\\[(.*?)\\]"
-                                        + // alt text = $2
+      + "[!]\\[(.*?)\\]"
+      + // alt text = $2
       "[ ]?(?:\\n[ ]*)?"
-                                        + "\\[(.*?)\\]"
-                                        + // ID = $3
+      + "\\[(.*?)\\]"
+      + // ID = $3
       ")");
     text.replaceAll(imageLink, (Matcher m) -> {
                     String replacementText;
@@ -701,11 +752,11 @@ public class Markdown {
   private TextEditor doAnchors(TextEditor markup) {
     // Internal references: [link text] [id]
     Pattern internalLink = Pattern.compile("("
-                                           + "\\[(.*?)\\]"
-                                           + // Link text = $2
+      + "\\[(.*?)\\]"
+      + // Link text = $2
       "[ ]?(?:\\n[ ]*)?"
-                                           + "\\[(.*?)\\]"
-                                           + // ID = $3
+      + "\\[(.*?)\\]"
+      + // ID = $3
       ")");
     markup.replaceAll(internalLink, (Matcher m) -> {
                       String replacementText;
@@ -739,23 +790,23 @@ public class Markdown {
 
     // Inline-style links: [link text](url "optional title")
     Pattern inlineLink = Pattern.compile("("
-                                         + // Whole match = $1
+      + // Whole match = $1
       "\\[(.*?)\\]"
-                                         + // Link text = $2
+      + // Link text = $2
       "\\("
-                                         + "[ \\t]*"
-                                         + "<?(.*?)>?"
-                                         + // href = $3
+      + "[ \\t]*"
+      + "<?(.*?)>?"
+      + // href = $3
       "[ \\t]*"
-                                         + "("
-                                         + "(['\"])"
-                                         + // Quote character = $5
+      + "("
+      + "(['\"])"
+      + // Quote character = $5
       "(.*?)"
-                                         + // Title = $6
+      + // Title = $6
       "\\5"
-                                         + ")?"
-                                         + "\\)"
-                                         + ")", Pattern.DOTALL);
+      + ")?"
+      + "\\)"
+      + ")", Pattern.DOTALL);
     markup.replaceAll(inlineLink, (Matcher m) -> {
                       String linkText = m.group(2);
                       String url = m.group(3);
@@ -783,12 +834,12 @@ public class Markdown {
     // These must come last in case you've also got [link test][1]
     // or [link test](/foo)
     Pattern referenceShortcut = Pattern.compile("("
-                                                + // wrap whole match in $1
+      + // wrap whole match in $1
       "\\["
-                                                + "([^\\[\\]]+)"
-                                                + // link text = $2; can't contain '[' or ']'
+      + "([^\\[\\]]+)"
+      + // link text = $2; can't contain '[' or ']'
       "\\]"
-                                                + ")", Pattern.DOTALL);
+      + ")", Pattern.DOTALL);
     markup.replaceAll(referenceShortcut, (Matcher m) -> {
                       String replacementText;
                       String wholeMatch = m.group(1);
@@ -835,7 +886,7 @@ public class Markdown {
   }
 
   private TextEditor doCodeSpans(TextEditor markup) {
-    return markup.replaceAll(Pattern.compile("(?<!\\\\)(`+)(.+?)(?<!`)\\1(?!`)"), (Matcher m) -> {
+    return markup.replaceAll(Pattern.compile("(?<!\\\\)(`)(.+?)(?<!`)\\1(?!`)"), (Matcher m) -> {
                              String code = m.group(2);
                              TextEditor subEditor = new TextEditor(code);
                              subEditor.deleteAll("^[ \\t]+").deleteAll("[ \\t]+$");
