@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CodeTester {
+public class CodeBlockTester {
 
   private Markdown m;
 
@@ -49,7 +49,8 @@ public class CodeTester {
 //    pattern = "(\n```(\\w*))(.*)";
 //    pattern = "(?<=\\s```)(\\w*)\\n((.*\\n?)+)";
 //    pattern = "(?<=```)((\\w*)\\n((.*\\n)+)(?=```))"; // captures with look behind look ahead but does not include back ticks
-    pattern = "(?:```)\\s?+(\\w*)\\n((.*\\n)+)(?:```)"; // works! non capturing groups = final pattern
+//    pattern = "(?:```)\\s?+(\\w*)\\n((.*\\n)+)(?:```)"; // works! non capturing groups = final pattern; fails without language
+    pattern = "(?:```)[\\s]*([\\w]*)?\\n((.*\\n)+)(?:```)"; // 01/21/18 works! with or without language
 
     Pattern p = Pattern.compile(pattern);
 
@@ -61,7 +62,7 @@ public class CodeTester {
       }
     }
 
-    System.out.println(m.toHtml(text));
+//    System.out.println(m.toHtml(text));
   }
 
 }

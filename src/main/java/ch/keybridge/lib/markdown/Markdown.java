@@ -353,7 +353,8 @@ public class Markdown {
    * @return a text editor instance
    */
   private TextEditor doGHCodeBlocks(TextEditor markup) {
-    String pattern = "(?:```)\\s?+(\\w*)?\\n((.*\\n)+)(?:```)";
+//  String pattern = "(?:```)\\s?+(\\w*)?\\n((.*\\n)+)(?:```)";
+    String pattern = "(?:```)[\\s]*([\\w]*)?\\n((.*\\n)+)(?:```)"; // 01/21/18 works with or without language declaration
     Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
     return markup.replaceAll(p, new Replacement() {
                              @Override
