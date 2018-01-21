@@ -3,14 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>keybridge.lib</groupId>
   <artifactId>markdown</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
 
   <name>lib-markdown</name>
   <description>Markdown to HTML translation.
 
     Markdown is the pure Java port of Markdown (a text-to-html conversion tool
-    written by John Gruber.) This library is a fork and rewrite of MarkdownJ, which
+    written by John Gruber.)
+
+    Version 1 of this library is a fork and rewrite of MarkdownJ, which
     ceased development around 2014.
 
     Original project MarkdownJ is:
@@ -18,9 +20,16 @@
     Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
     Copyright (c) 2008 - 2013 Alex Coles
 
+    Version 2 of this library is a fork and rewrite of Txtmark, a much improved MD processor which ceased development around 2015.
+
+    Copyright (C) 2011-2015 René Jeschke rene_jeschke@yahoo.de
+
     History
     v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
     v1.1.0 - add support for github encoded code blocks using three back ticks (```)
+    v2.0.0 - fork to code based upon Txtmark project
+
+
   </description>
 
   <organization>
@@ -35,18 +44,20 @@
     <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
 
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
 
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
