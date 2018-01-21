@@ -360,7 +360,6 @@ public class Markdown {
                              @Override
                              public String replacement(Matcher m) {
                                String codeBlock = m.group(2);
-                               System.out.println("debug found codeblock ");
                                TextEditor ed = new TextEditor(codeBlock);
                                ed.outdent();
                                encodeCode(ed);
@@ -382,7 +381,18 @@ public class Markdown {
                              public String languageBlock(String firstLine, String text) {
                                // dont'use %n in format string (toHtml aspect every new line char as "\n")
                                //String codeBlockTemplate = "<pre class=\"brush: %s\">%n%s%n</pre>"; // http://alexgorbatchev.com/wiki/SyntaxHighlighter
-                               String codeBlockTemplate = "\n\n<pre class=\"%s\">\n%s\n</pre>\n\n"; // http://shjs.sourceforge.net/doc/documentation.html
+//                               String codeBlockTemplate = "\n\n<pre class=\"%s\">\n%s\n</pre>\n\n"; // http://shjs.sourceforge.net/doc/documentation.html
+                               /**
+                                * 01/21/17 change output format to support
+                                * prettyprint and HTML5 convention of embedding
+                                * a "code" element inside the "pre" and using
+                                * "language-java" style classes.
+                                * <p>
+                                * Developer note: to turn on line numbering add
+                                * the class "linenums" to the PRE block. e.g.
+                                * "prettyprint linenums".
+                                */
+                               String codeBlockTemplate = "\n\n<pre class=\"prettyprint\"><code class=\"language-%s\">%s</code></pre>\n\n"; // http://shjs.sourceforge.net/doc/documentation.html
                                String lang = firstLine.trim();
                                String block = text.replaceFirst(firstLine + "\n", "");
                                return String.format(codeBlockTemplate, lang, block);
@@ -390,7 +400,7 @@ public class Markdown {
 
                              public String genericCodeBlock(String text) {
                                // dont'use %n in format string (toHtml aspect every new line char as "\n")
-                               String codeBlockTemplate = "\n\n<pre><code>%s\n</code></pre>\n\n";
+                               String codeBlockTemplate = "\n\n<pre class=\"prettyprint\"><code>%s\n</code></pre>\n\n";
                                return String.format(codeBlockTemplate, text);
                              }
                            });

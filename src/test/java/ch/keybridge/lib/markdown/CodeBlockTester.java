@@ -24,7 +24,7 @@ public class CodeBlockTester {
   public void testCodeBlock() {
     String text = "definitiones fringilla sadipscing a mus mandamus "
       + "dapibus instructior scripserit mel unum conclusionemque signiferumque urbanitas \n"
-      + "``` java\n"
+      + "```java\n"
       + "elit fringilla laudem recteque \n"
       + "vehicula inani signiferumque tempus interpretaris \n"
       + "nullam vidisse lacus dicta sodales \n"
@@ -62,7 +62,7 @@ public class CodeBlockTester {
       }
     }
 
-//    System.out.println(m.toHtml(text));
+    System.out.println(m.toHtml(text));
   }
 
 }
