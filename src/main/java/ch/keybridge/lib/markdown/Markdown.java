@@ -782,8 +782,7 @@ public class Markdown {
         case ULIST:
           while (line != null) {
             final LineType t = line.getLineType(this.config);
-            if (!line.isEmpty
-              && (line.prevEmpty && line.leading == 0 && !(t == LineType.OLIST || t == LineType.ULIST))) {
+            if (!line.isEmpty && (line.prevEmpty && line.leading == 0 && !(t == LineType.OLIST || t == LineType.ULIST))) {
               break;
             }
             line = line.next;
