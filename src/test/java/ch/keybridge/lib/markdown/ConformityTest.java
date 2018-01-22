@@ -91,7 +91,7 @@ public class ConformityTest {
       final String text = readTextUTF_8(txtIn);
       final String compare = readTextUTF_8(cmpIn);
 
-      final String processed = Processor.process(text);
+      final String processed = Markdown.process(text);
 
       final String tCompare = tidy(compare);
       final String tProcessed = tidy(processed);

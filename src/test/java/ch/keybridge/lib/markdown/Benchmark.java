@@ -15,7 +15,7 @@
  */
 package ch.keybridge.lib.markdown;
 
-import ch.keybridge.lib.markdown.Processor;
+import ch.keybridge.lib.markdown.Markdown;
 import java.util.Random;
 
 import org.junit.Test;
@@ -296,7 +296,7 @@ public class Benchmark
     private static long timedProcess(final String text)
     {
         final long t0 = System.nanoTime();
-        Processor.process(text);
+        Markdown.process(text);
         final long t1 = System.nanoTime();
         return t1 - t0;
     }
