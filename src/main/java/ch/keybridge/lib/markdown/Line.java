@@ -20,9 +20,7 @@ import java.util.LinkedList;
 /**
  * This class represents a text line.
  * <p>
- * <p>
  * It also provides methods for processing and analyzing a line.
- * </p>
  *
  * @author René Jeschke <rene_jeschke@yahoo.de>
  */
@@ -265,18 +263,21 @@ class Line {
       return LineType.BQUOTE;
     }
 
-    if (configuration.forceExtendedProfile) {
-      if (this.value.length() - this.leading - this.trailing > 2) {
-        if (this.value.charAt(this.leading) == '`'
-          && this.countCharsStart('`', configuration.allowSpacesInFencedDelimiters) >= 3) {
-          return LineType.FENCED_CODE;
-        }
-        if (this.value.charAt(this.leading) == '~'
-          && this.countCharsStart('~', configuration.allowSpacesInFencedDelimiters) >= 3) {
-          return LineType.FENCED_CODE;
-        }
-      }
+//    if (configuration.forceExtendedProfile) {
+    if (this.value.startsWith("```") || this.value.startsWith("~~~")) {
+      return LineType.FENCED_CODE;
     }
+//      if (this.value.length() - this.leading - this.trailing > 2) {
+//        if (this.value.charAt(this.leading) == '`'
+//          && this.countCharsStart('`', configuration.allowSpacesInFencedDelimiters) == 3) {
+//          return LineType.FENCED_CODE;
+//        }
+//        if (this.value.charAt(this.leading) == '~'
+//          && this.countCharsStart('~', configuration.allowSpacesInFencedDelimiters) == 3) {
+//          return LineType.FENCED_CODE;
+//        }
+//      }
+//    }
 
     if (this.value.length() - this.leading - this.trailing > 2
       && (this.value.charAt(this.leading) == '*' || this.value.charAt(this.leading) == '-' || this.value
@@ -438,7 +439,7 @@ class Line {
    * @return <code>true</code> if it is a valid block.
    */
   private boolean checkHTML() {
-    final LinkedList<String> tags = new LinkedList<String>();
+    final LinkedList<String> tags = new LinkedList<>();
     final StringBuilder temp = new StringBuilder();
     int pos = this.leading;
     if (this.value.charAt(this.leading + 1) == '!') {

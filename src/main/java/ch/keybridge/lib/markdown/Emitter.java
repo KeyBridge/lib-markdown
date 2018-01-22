@@ -28,7 +28,7 @@ class Emitter {
   /**
    * Link references.
    */
-  private final HashMap<String, LinkRef> linkRefs = new HashMap<String, LinkRef>();
+  private final HashMap<String, LinkRef> linkRefs = new HashMap<>();
   /**
    * The configuration.
    */
@@ -64,7 +64,9 @@ class Emitter {
    */
   public void emit(final StringBuilder out, final Block root) {
     root.removeSurroundingEmptyLines();
-
+    /**
+     * Open the text block.
+     */
     switch (root.type) {
       case RULER:
         this.config.decorator.horizontalRuler(out);
@@ -87,7 +89,7 @@ class Emitter {
       case CODE:
       case FENCED_CODE:
         if (this.config.codeBlockEmitter == null) {
-          this.config.decorator.openCodeBlock(out);
+          this.config.decorator.openCodeBlock(out, root.meta);
         }
         break;
       case BLOCKQUOTE:
@@ -109,7 +111,9 @@ class Emitter {
         out.append('>');
         break;
     }
-
+    /**
+     * Print the text block content.
+     */
     if (root.hasLines()) {
       this.emitLines(out, root);
     } else {
@@ -119,7 +123,9 @@ class Emitter {
         block = block.next;
       }
     }
-
+    /**
+     * Close the text block.
+     */
     switch (root.type) {
       case RULER:
       case NONE:
@@ -826,7 +832,7 @@ class Emitter {
   private void emitCodeLines(final StringBuilder out, final Line lines, final String meta, final boolean removeIndent) {
     Line line = lines;
     if (this.config.codeBlockEmitter != null) {
-      final ArrayList<String> list = new ArrayList<String>();
+      final ArrayList<String> list = new ArrayList<>();
       while (line != null) {
         if (line.isEmpty) {
           list.add("");
@@ -838,7 +844,14 @@ class Emitter {
       this.config.codeBlockEmitter.emitBlock(out, list, meta);
     } else {
       while (line != null) {
+        if (line.value.startsWith("```")) {
+          System.out.println("ignoring start line " + line.value);
+          line = line.next;
+        }
         if (!line.isEmpty) {
+          /**
+           * Scan the line, char by char.
+           */
           for (int i = removeIndent ? 4 : 0; i < line.value.length(); i++) {
             final char c;
             switch (c = line.value.charAt(i)) {

@@ -610,12 +610,47 @@ class Utils {
    * @since 0.7
    */
   public final static String getMetaFromFence(final String fenceLine) {
-    for (int i = 0; i < fenceLine.length(); i++) {
-      final char c = fenceLine.charAt(i);
-      if (!Character.isWhitespace(c) && c != '`' && c != '~') {
-        return fenceLine.substring(i).trim();
+    return fenceLine.replaceAll("\\W", "");
+//    for (int i = 0; i < fenceLine.length(); i++) {
+//      final char c = fenceLine.charAt(i);
+//      if (!Character.isWhitespace(c) && c != '`' && c != '~') {
+//        return fenceLine.substring(i).trim();
+//      }
+//    }
+//    return "";
+  }
+
+  public static void escapedAdd(final StringBuilder sb, final String str) {
+    for (int i = 0; i < str.length(); i++) {
+      final char ch = str.charAt(i);
+      if (ch < 33 || Character.isWhitespace(ch) || Character.isSpaceChar(ch)) {
+        sb.append(' ');
+      } else {
+        switch (ch) {
+          case '"':
+            sb.append("&quot;");
+            break;
+          case '\'':
+            sb.append("&apos;");
+            break;
+          case '<':
+            sb.append("&lt;");
+            break;
+          case '>':
+            sb.append("&gt;");
+            break;
+          case '&':
+            sb.append("&amp;");
+            break;
+          default:
+            sb.append(ch);
+            break;
+        }
       }
     }
-    return "";
   }
+
+//  public static String highlight(final List<String> lines, final String meta) throws IOException {
+//    return lines;
+//  }
 }

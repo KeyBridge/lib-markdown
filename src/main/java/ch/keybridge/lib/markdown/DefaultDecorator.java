@@ -87,6 +87,20 @@ public class DefaultDecorator implements Decorator {
   }
 
   /**
+   * {@inheritDoc }
+   *
+   * @see com.github.rjeschke.txtmark.Decorator#closeCodeBlock(StringBuilder)
+   */
+  @Override
+  public void openCodeBlock(final StringBuilder out, final String meta) {
+    if (meta != null && !meta.isEmpty()) {
+      out.append("<pre><code class=\"").append(meta).append("\">");
+    } else {
+      out.append("<pre><code>");
+    }
+  }
+
+  /**
    * @see com.github.rjeschke.txtmark.Decorator#closeCodeBlock(StringBuilder)
    */
   @Override

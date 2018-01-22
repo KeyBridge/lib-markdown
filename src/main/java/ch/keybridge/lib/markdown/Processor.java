@@ -20,14 +20,9 @@ import java.io.*;
 /**
  * Markdown processor class.
  * <p>
- * <p>
  * Example usage:
- * </p>
- * <p>
- * <
- * pre>
- * <code>String result = Processor.process("This is ***TXTMARK***");
- * </code>
+ * <pre>
+ * <code>String result = Processor.process("This is ***TXTMARK***");</code>
  * </pre>
  *
  * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
@@ -725,21 +720,35 @@ public class Processor {
           line = root.lines;
           break;
         case FENCED_CODE:
+          /**
+           * Record the block entry line since it may include metadata.
+           */
+          String entryFence = line.value;
+          /**
+           * Step into the block.
+           */
           line = line.next;
+          /**
+           * Split the block
+           */
+          /**
+           * Scan ahead to the closing fence.
+           */
           while (line != null) {
             if (line.getLineType(this.config) == LineType.FENCED_CODE) {
               break;
             }
-            // TODO ... is this really necessary? Maybe add a special
-            // flag?
             line = line.next;
           }
+          /**
+           * If have not reached EOF then skip the closing fence.
+           */
           if (line != null) {
             line = line.next;
           }
           block = root.split(line != null ? line.previous : root.lineTail);
           block.type = BlockType.FENCED_CODE;
-          block.meta = Utils.getMetaFromFence(block.lines.value);
+          block.meta = Utils.getMetaFromFence(entryFence);
           block.lines.setEmpty();
           if (block.lineTail.getLineType(this.config) == LineType.FENCED_CODE) {
             block.lineTail.setEmpty();

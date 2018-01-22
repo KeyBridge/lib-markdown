@@ -85,20 +85,25 @@ public interface Decorator {
   public void closeBlockquote(final StringBuilder out);
 
   /**
-   * Called when a code block is opened.
-   * <p>
-   * <p>
-   * Default implementation is:
-   * </p>
-   * <p>
-   * <
-   * pre>
+   * Called when a code block is opened. Default implementation is:
+   * <pre>
    * <code>out.append("&lt;pre&gt;&lt;code&gt;");</code>
    * </pre>
    *
    * @param out The StringBuilder to write to.
    */
   public void openCodeBlock(final StringBuilder out);
+
+  /**
+   * Called when a code block is opened. Default implementation is:
+   * <pre>
+   * <code>out.append("&lt;pre&gt;&lt;code&gt;");</code>
+   * </pre>
+   *
+   * @param out  The StringBuilder to write to.
+   * @param meta the code meta data (i.e. language)
+   */
+  public void openCodeBlock(final StringBuilder out, final String meta);
 
   /**
    * Called when a code block is closed.

@@ -33,11 +33,8 @@ public class Configuration {
   final SpanEmitter specialLinkEmitter;
 
   /**
-   * <p>
    * This is the default configuration for txtmark's <code>process</code>
    * methods
-   * </p>
-   * <p>
    * <ul>
    * <li><code>safeMode = false</code></li>
    * <li><code>encoding = UTF-8</code></li>
@@ -98,7 +95,7 @@ public class Configuration {
     private boolean safeMode = false;
     private boolean panicMode = false;
     private boolean forceExtendedProfile = false;
-    private boolean allowSpacesInFencedDelimiters = true;
+    private boolean allowSpacesInFencedDelimiters = false;
     private String encoding = "UTF-8";
     private Decorator decorator = new DefaultDecorator();
     private BlockEmitter codeBlockEmitter = null;
@@ -131,7 +128,7 @@ public class Configuration {
      * @return This builder.
      * @since 0.7
      */
-    public Builder forceExtentedProfile() {
+    public Builder forceExtendedProfile() {
       this.forceExtendedProfile = true;
       return this;
     }
