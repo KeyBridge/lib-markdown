@@ -26,14 +26,14 @@ public class ConformityTest {
   private static final String RES = "/testsuite/";
   private static final String[] TESTS
                                 = {
-      "Amps and angle encoding", "Auto links", "Backslash escapes", "Blockquotes with code blocks", "Code Blocks", "Code Block Syntax",
+      "Amps and angle encoding", "Auto links", "Backslash escapes", "Blockquotes with code blocks", "Code Blocks", "Fenced Code Block",
       "Code Spans", "Hard-wrapped paragraphs with list-like lines", "Horizontal rules", "Images",
       "Inline HTML (Advanced)", "Inline HTML (Simple)", "Inline HTML comments", "Links, inline style",
       "Links, reference style", "Links, shortcut references", "Markdown Documentation - Basics",
       "Markdown Documentation - Syntax", "Nested blockquotes", "Ordered and unordered lists",
       "Strong and em together", "Tabs", "Tidyness",};
 
-  private final static String readTextUTF_8(final InputStream in) throws IOException {
+  protected final static String readTextUTF_8(final InputStream in) throws IOException {
     final Reader r = new BufferedReader(new InputStreamReader(in, UTF_8));
     final StringBuilder sb = new StringBuilder();
     try {
