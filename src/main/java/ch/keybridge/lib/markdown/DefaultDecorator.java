@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2011-2015 René Jeschke <rene_jeschke@yahoo.de>
+ * Copyright (C) 2018 Key Bridge
+ * Copyright (C) 2011-2015 René Jeschke
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +19,8 @@ package ch.keybridge.lib.markdown;
 /**
  * Default Decorator implementation.
  * <p>
- * <p>
  * Example for a user Decorator having a class attribute on &lt;p&gt; tags.
- * </p>
- * <p>
- * <
- * pre>
+ * <pre>
  * <code>public class MyDecorator extends DefaultDecorator
  * {
  *     &#64;Override
@@ -35,7 +32,8 @@ package ch.keybridge.lib.markdown;
  * </code>
  * </pre>
  *
- * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
+ * @author Key Bridge
+ * @author René Jeschke
  */
 public class DefaultDecorator implements Decorator {
 

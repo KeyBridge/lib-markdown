@@ -3,30 +3,10 @@
 **Markdown to HTML translation.**
 
 Markdown is a pure Java port of Markdown (a text-to-html conversion tool written by John Gruber.) This library is a fork, upgrade and and rewrite of **MarkdownJ** which ceased development around 2005.
+MarkdownJ uses a sophisticated REGEX and pattern substitution strategy. It requires a deep understanding of Java Patterns to maintain.
 
 This library supports basic encoded Markdown text. We use it to render simple encoded
 text blocks in various languages.
-
-
-### License
-
-Licensed under a Revised BSD License. Refer to the accompanying LICENSE file.
-
- - Copyright (c) 2005 Pete Bevin
- - Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
- - Copyright (c) 2008 - 2013 Alex Coles
- - Copyright (c) 2017+ Key Bridge
-
-### History
-
- - v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
- - v1.1.0 - add support for github encoded code blocks using three back ticks (```)
-
-
-Markdown to HTML translation.
-
-Markdown is a pure Java port of Markdown (a text-to-html conversion tool
-written by John Gruber.)
 
 Version 1 of this library is a fork and rewrite of MarkdownJ, which
 ceased development around 2005 (excepting minor patches).
@@ -36,8 +16,10 @@ ceased development around 2005 (excepting minor patches).
   Copyright (c) 2005 - 2007 John Mutchek, Marty Lamb / Martian Software, Inc.
   Copyright (c) 2008 - 2013 Alex Coles
 
-Version 2 of this library is a fork and rewrite of Txtmark, a much improved MD processor which ceased development around 2015.
+Version 2 of this library is a fork and rewrite of **Txtmark**, a slightly faster MD processor which ceased development around 2015. Txtmark employs
+a scanner-based approach using a recursive text block marking strategy to identify and reformat recognized blocks of text.
 
+  Original project Txtmark is:
   Copyright (C) 2011-2015 René Jeschke rene_jeschke@yahoo.de
 
 
@@ -80,6 +62,12 @@ javascript syntax highlighting library.
   v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
   v1.1.0 - add support for fenced code blocks using three back ticks (```)
   v2.0.0 - fork to code based upon Txtmark project; fix fenced code block processing
+
+
+### License
+
+Licensed under a Revised BSD License. Refer to the accompanying LICENSE file.
+
 
 
 ### References

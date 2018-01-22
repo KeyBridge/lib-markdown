@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2011-2015 René Jeschke <rene_jeschke@yahoo.de>
+ * Copyright (C) 2018 Key Bridge
+ * Copyright (C) 2011-2015 René Jeschke
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,8 @@ import java.io.*;
  * <code>String result = Processor.process("This is ***TXTMARK***");</code>
  * </pre>
  *
- * @author René Jeschke &lt;rene_jeschke@yahoo.de&gt;
+ * @author Key Bridge
+ * @author René Jeschke
  */
 public class Markdown {
 
@@ -70,7 +72,7 @@ public class Markdown {
    */
   public final static String process(final Reader reader, final Configuration configuration) throws IOException {
     final Markdown p = new Markdown(!(reader instanceof BufferedReader) ? new BufferedReader(reader) : reader,
-                                      configuration);
+                                    configuration);
     return p.process();
   }
 
@@ -121,7 +123,7 @@ public class Markdown {
    */
   public final static String process(final InputStream input, final Configuration configuration) throws IOException {
     final Markdown p = new Markdown(new BufferedReader(new InputStreamReader(input, configuration.encoding)),
-                                      configuration);
+                                    configuration);
     return p.process();
   }
 

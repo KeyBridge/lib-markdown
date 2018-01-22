@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2011-2015 René Jeschke <rene_jeschke@yahoo.de>
+ * Copyright (C) 2018 Key Bridge
+ * Copyright (C) 2011-2015 René Jeschke
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,8 @@ package ch.keybridge.lib.markdown;
 /**
  * Line type enumeration.
  *
- * @author René Jeschke <rene_jeschke@yahoo.de>
+ * @author Key Bridge
+ * @author René Jeschke
  */
 enum LineType {
   /**
