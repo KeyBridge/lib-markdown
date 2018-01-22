@@ -23,11 +23,25 @@ package ch.keybridge.lib.markdown;
  */
 public class Configuration {
 
+  /**
+   * Set to <code>true</code> to escape unsafe HTML tags.
+   * <p>
+   * Default is TRUE.
+   */
   final boolean safeMode;
   final boolean panicMode;
+  /**
+   * The text character encoding. Default is "UTF-8"
+   */
   final String encoding;
   final Decorator decorator;
   final BlockEmitter codeBlockEmitter;
+  /**
+   * Set to TRUE to aggressively convert characters to HTML-code tags. e.g.
+   * &amp;, &gt;
+   * <p>
+   * Default is FALSE.
+   */
   final boolean forceExtendedProfile;
   final boolean allowSpacesInFencedDelimiters;
   final SpanEmitter specialLinkEmitter;
@@ -92,7 +106,7 @@ public class Configuration {
    */
   public static class Builder {
 
-    private boolean safeMode = false;
+    private boolean safeMode = true;
     private boolean panicMode = false;
     private boolean forceExtendedProfile = false;
     private boolean allowSpacesInFencedDelimiters = false;
