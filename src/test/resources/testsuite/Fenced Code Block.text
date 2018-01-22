@@ -1,21 +1,32 @@
 Inline `code` has `back-ticks around` it.
 
-Blocks of code are either fenced by lines with three back-ticks ```, or are indented with four spaces. I recommend only using the fenced code blocks -- they're easier and only they support syntax highlighting.
+Blocks of code are either fenced by lines with three back-ticks  ```, or are indented with four spaces "    ". I recommend only using the fenced code blocks -- they're easier and only they support syntax highlighting.
+
+
 
 ```javascript
 var s = "JavaScript syntax highlighting";
 alert(s);
 ```
 
+Unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+
+
+
 ```python
 s = "Python syntax highlighting"
 print s
 ```
 
+sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum
+
+
 ```
 No language indicated, so no syntax highlighting.
 But let's throw in a <b>tag</b>.
 ```
+
+Quis autem vel eum
 
 ```java
 /**
@@ -35,4 +46,5 @@ public abstract class L2Char extends L2Object {
   }
 }
 ```
+
 
