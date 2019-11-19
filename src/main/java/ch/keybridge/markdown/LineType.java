@@ -14,57 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
 /**
- * Block type enum.
+ * Line type enumeration.
  *
  * @author Key Bridge
  * @author René Jeschke
  */
-enum BlockType {
+enum LineType {
   /**
-   * Unspecified. Used for root block and list items without paragraphs.
+   * Empty line.
    */
-  NONE,
+  EMPTY,
   /**
-   * A block quote.
+   * Undefined content.
    */
-  BLOCKQUOTE,
+  OTHER,
   /**
-   * A code block.
+   * A markdown headline.
+   */
+  HEADLINE,
+  HEADLINE1,
+  HEADLINE2,
+  /**
+   * A code block line.
    */
   CODE,
   /**
-   * A fenced code block.
+   * A list.
    */
-  FENCED_CODE,
+  ULIST,
+  OLIST,
   /**
-   * A headline.
+   * A block quote.
    */
-  HEADLINE,
-  /**
-   * A list item.
-   */
-  LIST_ITEM,
-  /**
-   * An ordered list.
-   */
-  ORDERED_LIST,
-  /**
-   * A paragraph.
-   */
-  PARAGRAPH,
+  BQUOTE,
   /**
    * A horizontal ruler.
    */
-  RULER,
+  HR,
   /**
-   * An unordered list.
+   * Start of a XML block.
    */
-  UNORDERED_LIST,
+  XML,
   /**
-   * A XML block.
+   * Fenced code block start/end
    */
-  XML
+  FENCED_CODE
 }

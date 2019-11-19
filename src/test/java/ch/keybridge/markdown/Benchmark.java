@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
-import ch.keybridge.lib.markdown.Markdown;
+import ch.keybridge.markdown.Markdown;
 import java.util.Random;
 
 import org.junit.Test;

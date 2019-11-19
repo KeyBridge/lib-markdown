@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
+import ch.keybridge.markdown.Markdown;
+import ch.keybridge.markdown.Configuration;
 import java.io.*;
 import java.nio.charset.Charset;
 import org.junit.Assert;

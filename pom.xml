@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>keybridge.lib</groupId>
   <artifactId>markdown</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <packaging>jar</packaging>
 
   <name>lib-markdown</name>
@@ -30,7 +30,7 @@
     v1.0.0 fork of MarkdownJ v0.5.0 snapshot; clean up for JDK8
     v1.1.0 - add support for fenced code blocks using three back ticks (```)
     v2.0.0 - fork to code based upon Txtmark project; fix fenced code block processing
-
+    v2.1.0 - refactor all to 'ch.keybridge.markdown' base package
   </description>
 
   <organization>

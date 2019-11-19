@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
 import java.util.HashMap;
 import java.util.HashSet;

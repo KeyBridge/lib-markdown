@@ -14,22 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
 /**
- * An interface for emitting span elements. Currently only used for special
- * links.
+ * A markdown link reference.
  *
  * @author Key Bridge
  * @author René Jeschke
  */
-public interface SpanEmitter {
+class LinkRef {
 
   /**
-   * Emits a span element.
-   *
-   * @param out     The StringBuilder to append to.
-   * @param content The span's content.
+   * The link.
    */
-  public void emitSpan(StringBuilder out, String content);
+  public final String link;
+  /**
+   * The optional comment/title.
+   */
+  public String title;
+  /**
+   * Flag indicating that this is an abbreviation.
+   */
+  public final boolean isAbbrev;
+
+  /**
+   * Constructor.
+   *
+   * @param link  The link.
+   * @param title The title (may be <code>null</code>).
+   */
+  public LinkRef(final String link, final String title, final boolean isAbbrev) {
+    this.link = link;
+    this.title = title;
+    this.isAbbrev = isAbbrev;
+  }
+
+  /**
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.link + " \"" + this.title + "\"";
+  }
 }

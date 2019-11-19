@@ -14,46 +14,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
 /**
- * A markdown link reference.
+ * Block type enum.
  *
  * @author Key Bridge
  * @author René Jeschke
  */
-class LinkRef {
-
+enum BlockType {
   /**
-   * The link.
+   * Unspecified. Used for root block and list items without paragraphs.
    */
-  public final String link;
+  NONE,
   /**
-   * The optional comment/title.
+   * A block quote.
    */
-  public String title;
+  BLOCKQUOTE,
   /**
-   * Flag indicating that this is an abbreviation.
+   * A code block.
    */
-  public final boolean isAbbrev;
-
+  CODE,
   /**
-   * Constructor.
-   *
-   * @param link  The link.
-   * @param title The title (may be <code>null</code>).
+   * A fenced code block.
    */
-  public LinkRef(final String link, final String title, final boolean isAbbrev) {
-    this.link = link;
-    this.title = title;
-    this.isAbbrev = isAbbrev;
-  }
-
+  FENCED_CODE,
   /**
-   * @see java.lang.Object#toString()
+   * A headline.
    */
-  @Override
-  public String toString() {
-    return this.link + " \"" + this.title + "\"";
-  }
+  HEADLINE,
+  /**
+   * A list item.
+   */
+  LIST_ITEM,
+  /**
+   * An ordered list.
+   */
+  ORDERED_LIST,
+  /**
+   * A paragraph.
+   */
+  PARAGRAPH,
+  /**
+   * A horizontal ruler.
+   */
+  RULER,
+  /**
+   * An unordered list.
+   */
+  UNORDERED_LIST,
+  /**
+   * A XML block.
+   */
+  XML
 }

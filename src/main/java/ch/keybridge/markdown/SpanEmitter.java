@@ -14,52 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.keybridge.lib.markdown;
+package ch.keybridge.markdown;
 
 /**
- * Line type enumeration.
+ * An interface for emitting span elements. Currently only used for special
+ * links.
  *
  * @author Key Bridge
  * @author René Jeschke
  */
-enum LineType {
+public interface SpanEmitter {
+
   /**
-   * Empty line.
+   * Emits a span element.
+   *
+   * @param out     The StringBuilder to append to.
+   * @param content The span's content.
    */
-  EMPTY,
-  /**
-   * Undefined content.
-   */
-  OTHER,
-  /**
-   * A markdown headline.
-   */
-  HEADLINE,
-  HEADLINE1,
-  HEADLINE2,
-  /**
-   * A code block line.
-   */
-  CODE,
-  /**
-   * A list.
-   */
-  ULIST,
-  OLIST,
-  /**
-   * A block quote.
-   */
-  BQUOTE,
-  /**
-   * A horizontal ruler.
-   */
-  HR,
-  /**
-   * Start of a XML block.
-   */
-  XML,
-  /**
-   * Fenced code block start/end
-   */
-  FENCED_CODE
+  public void emitSpan(StringBuilder out, String content);
 }
